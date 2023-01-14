@@ -1,0 +1,131 @@
+﻿@page "/"
+
+<PageTitle>Github Forks</PageTitle>
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@using GitHubForks.Data
+@using FluentValidation
+@inject GitHubService GitHubService
+
+<MudText Typo="Typo.h2">GitHub Forks</MudText>
+<MudText Typo="Typo.subtitle1">Search for most active and popular forks</MudText>
+<br />
+
+<MudPaper Class="d-flex align-center flex-grow-1" Elevation="0">
+    <MudCard>
+        <MudForm Model="@model" @ref="@form" Validation="@(ValidationRules.ValidateValue)" ValidationDelay="0">
+            <MudCardContent>
+                <MudTextField @bind-Value="model.Owner" For="@(() => model.Owner)"
+                              Immediate="true" FullWidth="false" Label="Owner"
+                              Variant="Variant.Outlined" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Inventory" AdornmentColor="Color.Info" />
+                <MudTextField @bind-Value="model.Repository" For="@(() => model.Repository)"
+                              Immediate="true" FullWidth="false" Label="Repository"
+                              Variant="Variant.Outlined" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Person" AdornmentColor="Color.Info" />
+            </MudCardContent>
+
+            <MudCardActions>
+                <MudButton Disabled="@_processing" OnClick="@(async () => await Submit())"
+                           Variant="Variant.Filled" Color="Color.Primary" EndIcon="@Icons.Custom.Brands.GitHub">
+                    @if (_processing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Processing</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Fetch</MudText>
+                    }
+                </MudButton>
+            </MudCardActions>
+        </MudForm>
+    </MudCard>
+</MudPaper>
+<br />
+<MudTable Items="@forks" Hover="true" Breakpoint="Breakpoint.Sm" SortLabel="Sort by" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Fork, object>(x=>x.name)">Name</MudTableSortLabel></MudTh>
+        <MudTh>Icon</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Fork, object>(x=>x.stargazers_count)">Stars</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Fork, object>(x=>x.open_issues_count)">Open Issues</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Fork, object>(x=>x.pushed_at)">Last Push</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.name</MudTd>
+        <MudTd DataLabel="Icon"><MudAvatar Image="@context.owner.avatar_url"/></MudTd>
+        <MudTd DataLabel="Stars">@context.stargazers_count</MudTd>
+        <MudTd DataLabel="Open Issues">@context.open_issues_count</MudTd>
+        <MudTd DataLabel="Last push">@context.pushed_at</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+    </PagerContent>
+</MudTable>
+
+
+
+@code {
+    private MudForm form;
+    private ForksDataModel model = new();
+    private FileModelFluentValidator ValidationRules = new();
+    private bool SuppressOnChangeWhenInvalid;
+
+    private bool _processing = false;
+
+    private IEnumerable<Fork> forks;
+
+    private bool _hidePosition;
+    private bool _loading;
+
+    private async Task Submit()
+    {
+        await form.Validate();
+
+        _processing = true;
+        try
+        {
+            forks = await GitHubService.GetForksAsync($"https://api.github.com/repos/{model.Owner}/{model.Repository}/forks?sort=stargazers&per_page=100");
+        }
+        catch (Exception ex)
+        {
+            _processing = false;
+        }
+
+        StateHasChanged();
+        _processing = false;
+    }
+
+    public class ForksDataModel
+    {
+        public string Owner { get; set; } = "";
+        public string Repository { get; set; } = "";
+    }
+
+    /// <summary>
+    /// A standard AbstractValidator which contains multiple rules and can be shared with the back end API
+    /// </summary>
+    /// <typeparam name="OrderModel"></typeparam>
+    public class FileModelFluentValidator : AbstractValidator<ForksDataModel>
+    {
+        public FileModelFluentValidator()
+        {
+            RuleFor(x => x.Owner)
+                .NotEmpty()
+                .Length(1, 30);
+            RuleFor(x => x.Repository)
+                .NotEmpty();
+        }
+
+        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+        {
+            var result = await ValidateAsync(ValidationContext<ForksDataModel>.CreateWithOptions((ForksDataModel)model, x => x.IncludeProperties(propertyName)));
+            if (result.IsValid)
+                return Array.Empty<string>();
+            return result.Errors.Select(e => e.ErrorMessage);
+        };
+    }
+}
