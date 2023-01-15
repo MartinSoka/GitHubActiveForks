@@ -21,11 +21,11 @@
                 <MudTextField @bind-Value="model.Owner" For="@(() => model.Owner)"
                               Immediate="true" FullWidth="false" Label="Owner"
                               Variant="Variant.Outlined" Adornment="Adornment.Start"
-                              AdornmentIcon="@Icons.Material.Filled.Inventory" AdornmentColor="Color.Info" />
+                              AdornmentIcon="@Icons.Material.Filled.Person" AdornmentColor="Color.Info" />
                 <MudTextField @bind-Value="model.Repository" For="@(() => model.Repository)"
                               Immediate="true" FullWidth="false" Label="Repository"
                               Variant="Variant.Outlined" Adornment="Adornment.Start"
-                              AdornmentIcon="@Icons.Material.Filled.Person" AdornmentColor="Color.Info" />
+                              AdornmentIcon="@Icons.Material.Filled.Inventory" AdornmentColor="Color.Info" />
             </MudCardContent>
 
             <MudCardActions>
@@ -66,20 +66,14 @@
     </PagerContent>
 </MudTable>
 
-
-
 @code {
     private MudForm form;
     private ForksDataModel model = new();
     private FileModelFluentValidator ValidationRules = new();
-    private bool SuppressOnChangeWhenInvalid;
 
     private bool _processing = false;
 
     private IEnumerable<Fork> forks;
-
-    private bool _hidePosition;
-    private bool _loading;
 
     private async Task Submit()
     {
