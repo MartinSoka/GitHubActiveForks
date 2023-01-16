@@ -49,7 +49,6 @@
 <MudTable Items="@forks" Hover="true" Breakpoint="Breakpoint.Sm" SortLabel="Sort by" LoadingProgressColor="Color.Info">
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Fork, object>(x=>x.name)">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<Fork, object>(x=>x.html_url)">Url</MudTableSortLabel></MudTh>
         <MudTh>Icon</MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<Fork, object>(x=>x.stargazers_count)">Stars</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<Fork, object>(x=>x.open_issues_count)">Open Issues</MudTableSortLabel></MudTh>
