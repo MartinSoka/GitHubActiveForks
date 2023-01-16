@@ -49,13 +49,14 @@
 <MudTable Items="@forks" Hover="true" Breakpoint="Breakpoint.Sm" SortLabel="Sort by" LoadingProgressColor="Color.Info">
     <HeaderContent>
         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Fork, object>(x=>x.name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<Fork, object>(x=>x.html_url)">Url</MudTableSortLabel></MudTh>
         <MudTh>Icon</MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<Fork, object>(x=>x.stargazers_count)">Stars</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<Fork, object>(x=>x.open_issues_count)">Open Issues</MudTableSortLabel></MudTh>
         <MudTh><MudTableSortLabel SortBy="new Func<Fork, object>(x=>x.pushed_at)">Last Push</MudTableSortLabel></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.name</MudTd>
+        <MudTd DataLabel="Name"><MudLink Href="@context.html_url">@context.name</MudLink></MudTd>
         <MudTd DataLabel="Icon"><MudAvatar Image="@context.owner.avatar_url"/></MudTd>
         <MudTd DataLabel="Stars">@context.stargazers_count</MudTd>
         <MudTd DataLabel="Open Issues">@context.open_issues_count</MudTd>

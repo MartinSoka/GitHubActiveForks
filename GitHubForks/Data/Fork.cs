@@ -3,6 +3,7 @@
     public class Fork
     {
         public string url { get; set; }
+        public string html_url { get; set; }
         public long id { get; set; }
         public Owner owner { get; set; }
         public string name { get; set; }
