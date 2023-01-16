@@ -11,7 +11,7 @@ Small project to view active forks in a github repository
 
 ### Built With
 
-This small project was a first hand on experience with blazor and MudBlazor UI framework
+This project was a first hand on experience with blazor and MudBlazor UI framework
 
 [![Blazor][Blazor]][Blazor-url]
 
@@ -20,7 +20,7 @@ This small project was a first hand on experience with blazor and MudBlazor UI f
 build and run locally or use the following url
 
   ```sh
-  tbd (hosted on cloud later)
+https://githubforks20230115131414.azurewebsites.net
   ```
 
 
